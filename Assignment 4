@@ -1,0 +1,122 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+class animal {
+    protected String name;
+
+    public animal(String name) {
+        this.name = name;
+    }
+
+    public void speak() {
+
+    }
+}
+
+class cat extends animal {
+    public cat(String name) {
+        super(name);
+    }
+
+    public void speak() {
+        System.out.println(name + " says meow");
+    }
+}
+
+class dog extends animal {
+    public dog(String name) {
+        super(name);
+    }
+
+    public void speak() {
+        System.out.println(name + " says woof");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        List<animal> animals = new ArrayList<>();
+
+        while (true) {
+            System.out.println("1. Add a cat");
+            System.out.println("2. Add a dog");
+            System.out.println("3. Display all animals");
+            System.out.println("4. Remove a cat");
+            System.out.println("5. Remove a dog");
+            System.out.println("6. Quit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1: {
+                    System.out.print("Enter cat's name: ");
+                    String name = scanner.nextLine();
+                    animals.add(new cat(name));
+                    System.out.println("Cat added");
+                    break;
+                }
+                case 2: {
+                    System.out.print("Enter dog's name: ");
+                    String name = scanner.nextLine();
+                    animals.add(new dog(name));
+                    System.out.println("Dog added");
+                    break;
+                }
+                case 3: {
+                    System.out.println("All animals:");
+                    for (animal animal : animals) {
+                        animal.speak();
+                    }
+                    break;
+                }
+                case 4: {
+                    System.out.print("Enter cat's name to remove: ");
+                    String removeName = scanner.nextLine();
+                    boolean catRemoved = false;
+                    for (int i = 0; i < animals.size(); i++) {
+                        if (animals.get(i) instanceof cat && animals.get(i).name.equals(removeName)) {
+                            animals.remove(i);
+                            catRemoved = true;
+                            break;
+                        }
+                    }
+                    if (catRemoved) {
+                        System.out.println("Cat removed");
+                    } else {
+                        System.out.println("Cat not found");
+                    }
+                    break;
+                }
+                case 5: {
+                    System.out.print("Enter dog's name to remove: ");
+                    String removeName = scanner.nextLine();
+                    boolean dogRemoved = false;
+                    for (int i = 0; i < animals.size(); i++) {
+                        if (animals.get(i) instanceof dog && animals.get(i).name.equals(removeName)) {
+                            animals.remove(i);
+                            dogRemoved = true;
+                            break;
+                        }
+                    }
+                    if (dogRemoved) {
+                        System.out.println("Dog removed");
+                    } else {
+                        System.out.println("Dog not found");
+                    }
+                    break;
+                }
+                case 6: {
+                    return;
+                }
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+                    break;
+            }
+
+            System.out.println();
+        }
+    }
+}
