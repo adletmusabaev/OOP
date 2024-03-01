@@ -1,0 +1,298 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+// Pattern Observer
+class BookLibrary {
+    private static BookLibrary instance;
+    private List<Book> books;
+
+    private BookLibrary() {
+        books = new ArrayList<>();
+    }
+
+    public static BookLibrary getInstance() {
+        if (instance == null) {
+            instance = new BookLibrary();
+        }
+        return instance;
+    }
+
+    public List<Book> getBooks() {
+        return books;
+    }
+
+    public void addBook(Book book) {
+        books.add(book);
+    }
+
+    public void removeBook(Book book) {
+        books.remove(book);
+    }
+
+    public void editBook(Book book, String newTitle, String newAuthor) {
+        book.setTitle(newTitle);
+        book.setAuthor(newAuthor);
+    }
+}
+
+// Pattern Factory
+interface BookFactory {
+    Book createBook(String title, String author);
+}
+
+class FictionBookFactory implements BookFactory {
+    @Override
+    public Book createBook(String title, String author) {
+        return new FictionBook(title, author);
+    }
+}
+
+class NonFictionBookFactory implements BookFactory {
+    @Override
+    public Book createBook(String title, String author) {
+        return new NonFictionBook(title, author);
+    }
+}
+
+// Pattern Strategy
+interface BookTypeStrategy {
+    void displayDetails(Book book);
+}
+
+class FictionBookTypeStrategy implements BookTypeStrategy {
+    @Override
+    public void displayDetails(Book book) {
+        System.out.println("Fiction book details:");
+        System.out.println("Title: " + book.getTitle());
+        System.out.println("Author: " + book.getAuthor());
+        System.out.println();
+    }
+}
+
+class NonFictionBookTypeStrategy implements BookTypeStrategy {
+    @Override
+    public void displayDetails(Book book) {
+        System.out.println("Non-fiction book details:");
+        System.out.println("Title: " + book.getTitle());
+        System.out.println("Author: " + book.getAuthor());
+        System.out.println();
+    }
+}
+
+// Pattern Decorator
+abstract class BookDecorator implements Book {
+    protected Book book;
+
+    public BookDecorator(Book book) {
+        this.book = book;
+    }
+
+    @Override
+    public String getTitle() {
+        return book.getTitle();
+    }
+
+    @Override
+    public String getAuthor() {
+        return book.getAuthor();
+    }
+}
+
+class HardcoverBookDecorator extends BookDecorator {
+    public HardcoverBookDecorator(Book book) {
+        super(book);
+    }
+
+    @Override
+    public String getTitle() {
+        return "Hardcover " + book.getTitle();
+    }
+
+    @Override
+    public void setTitle(String title) {
+
+    }
+
+    @Override
+    public void setAuthor(String author) {
+
+    }
+}
+
+// interface Book
+interface Book {
+    String getTitle();
+
+    String getAuthor();
+
+    void setTitle(String title);
+
+    void setAuthor(String author);
+}
+
+// Class book
+class BaseBook implements Book {
+    private String title;
+    private String author;
+
+    public BaseBook(String title, String author) {
+        this.title = title;
+        this.author = author;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
+
+    @Override
+    public String getAuthor() {
+        return author;
+    }
+
+    @Override
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    @Override
+    public void setAuthor(String author) {
+        this.author = author;
+    }
+}
+
+// Class Books
+class FictionBook extends BaseBook {
+    public FictionBook(String title, String author) {
+        super(title, author);
+    }
+}
+
+class NonFictionBook extends BaseBook {
+    public NonFictionBook(String title, String author) {
+        super(title, author);
+    }
+}
+
+// Пример использования
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+
+        BookLibrary library = BookLibrary.getInstance();
+
+        BookFactory fictionBookFactory = new FictionBookFactory();
+        BookFactory nonFictionBookFactory = new NonFictionBookFactory();
+
+        while (true) {
+            System.out.println("1. Add Book");
+            System.out.println("2. Remove Book");
+            System.out.println("3. Edit Book");
+            System.out.println("4. Display All Books");
+            System.out.println("5. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+            switch (choice) {
+                case 1: {
+                    System.out.print("Enter Book Title: ");
+                    String title = scanner.nextLine();
+                    System.out.print("Enter Book Author: ");
+                    String author = scanner.nextLine();
+
+                    System.out.println("Select Book Type:");
+                    System.out.println("1. Fiction Book");
+                    System.out.println("2. Non-fiction Book");
+                    int bookType = scanner.nextInt();
+                    scanner.nextLine();
+
+                    BookFactory bookFactory;
+                    if (bookType == 1) {
+                        bookFactory = fictionBookFactory;
+                    } else {
+                        bookFactory = nonFictionBookFactory;
+                    }
+
+                    Book book = bookFactory.createBook(title, author);
+                    library.addBook(book);
+                    System.out.println("Book added successfully!");
+                    System.out.println();
+                }
+                case 2: {
+                    System.out.print("Enter Book Title to remove: ");
+                    String title = scanner.nextLine();
+
+                    List<Book> books = library.getBooks();
+                    boolean bookRemoved = false;
+                    for (int i = 0; i < books.size(); i++) {
+                        if (books.get(i).getTitle().equalsIgnoreCase(title)) {
+                            Book book = books.get(i);
+                            library.removeBook(book);
+                            bookRemoved = true;
+                            break;
+                        }
+                    }
+
+                    if (bookRemoved) {
+                        System.out.println("Book removed successfully!");
+                    } else {
+                        System.out.println("Book not found.");
+                    }
+                    System.out.println();
+                }
+                case 3: {
+                    System.out.print("Enter Book Title to edit: ");
+                    String title = scanner.nextLine();
+
+                    List<Book> books = library.getBooks();
+                    boolean bookEdited = false;
+                    for (int i = 0; i < books.size(); i++) {
+                        if (books.get(i).getTitle().equalsIgnoreCase(title)) {
+                            Book book = books.get(i);
+                            System.out.print("Enter new Book Title: ");
+                            String newTitle = scanner.nextLine();
+                            System.out.print("Enter new Book Author: ");
+                            String newAuthor = scanner.nextLine();
+                            library.editBook(book, newTitle, newAuthor);
+                            bookEdited = true;
+                            break;
+                        }
+                    }
+
+                    if (bookEdited) {
+                        System.out.println("Book edited successfully!");
+                    } else {
+                        System.out.println("Book not found.");
+                    }
+                    System.out.println();
+                }
+                case 4: {
+                    List<Book> books = library.getBooks();
+                    if (books.isEmpty()) {
+                        System.out.println("No books found in the library.");
+                    } else {
+                        BookTypeStrategy fictionBookTypeStrategy = new FictionBookTypeStrategy();
+                        BookTypeStrategy nonfictionBookTypeStrategy = new NonFictionBookTypeStrategy();
+
+                        for (Book book : books) {
+                            if (book instanceof FictionBook) {
+                                fictionBookTypeStrategy.displayDetails(book);
+                            } else if (book instanceof NonFictionBook) {
+                                nonfictionBookTypeStrategy.displayDetails(book);
+                            }
+                        }
+                    }
+                    System.out.println();
+                }
+                case 5: {
+                    break;
+                }
+                default: {
+                    System.out.println("Invalid choice. Please try again.");
+                    break;
+                }
+            }
+        }
+    }
+}
